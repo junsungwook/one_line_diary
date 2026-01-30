@@ -1,0 +1,27 @@
+{
+  "@@locale": "en",
+  "appTitle": "One Line Diary",
+  "tagline": "End your day with one line",
+  "today": "Today",
+  "write": "Write",
+  "hint": "How was your day?",
+  "placeholder": "Write your day in one line...",
+  "streak": "Streak",
+  "streakDays": "{days} days",
+  "@streakDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "calendar": "Calendar",
+  "entries": "Entries",
+  "noEntryYet": "No entry yet",
+  "writeFirstLine": "Write your first line!",
+  "saved": "Saved!",
+  "delete": "Delete",
+  "edit": "Edit",
+  "cancel": "Cancel",
+  "save": "Save"
+}

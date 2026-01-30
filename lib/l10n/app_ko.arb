@@ -1,0 +1,20 @@
+{
+  "@@locale": "ko",
+  "appTitle": "한 줄 기록",
+  "tagline": "하루 끝, 한 줄로 기록해요",
+  "today": "오늘",
+  "write": "기록하기",
+  "hint": "오늘 하루는 어땠나요?",
+  "placeholder": "오늘 하루를 한 줄로...",
+  "streak": "연속",
+  "streakDays": "{days}일째",
+  "calendar": "달력",
+  "entries": "기록",
+  "noEntryYet": "아직 기록이 없어요",
+  "writeFirstLine": "오늘의 한 줄을 남겨보세요!",
+  "saved": "저장됨!",
+  "delete": "삭제",
+  "edit": "수정",
+  "cancel": "취소",
+  "save": "저장"
+}
