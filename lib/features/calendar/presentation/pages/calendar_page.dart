@@ -89,11 +89,99 @@ class _CalendarPageState extends State<CalendarPage> {
     ).then((_) => _loadRecordedDates());
   }
 
-  List<String> _getWeekdays(AppLocalizations l10n) {
-    if (l10n.localeName == 'ko') {
-      return ['일', '월', '화', '수', '목', '금', '토'];
+  List<String> _getWeekdays(String localeName) {
+    switch (localeName) {
+      case 'ko':
+        return ['일', '월', '화', '수', '목', '금', '토'];
+      case 'ja':
+        return ['日', '月', '火', '水', '木', '金', '土'];
+      case 'zh':
+        return ['日', '一', '二', '三', '四', '五', '六'];
+      case 'es':
+        return ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
+      case 'de':
+        return ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+      default:
+        return ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
     }
-    return ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  }
+
+  String _formatYearMonth(String localeName, DateTime date) {
+    switch (localeName) {
+      case 'ko':
+        return '${date.year}년 ${date.month}월';
+      case 'ja':
+        return '${date.year}年${date.month}月';
+      case 'zh':
+        return '${date.year}年${date.month}月';
+      case 'de':
+        const months = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+          'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+        return '${months[date.month - 1]} ${date.year}';
+      case 'es':
+        const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+          'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        return '${months[date.month - 1]} ${date.year}';
+      default:
+        const months = ['January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September', 'October', 'November', 'December'];
+        return '${months[date.month - 1]} ${date.year}';
+    }
+  }
+
+  String _getTodayText(String localeName) {
+    switch (localeName) {
+      case 'ko': return '오늘';
+      case 'ja': return '今日';
+      case 'zh': return '今天';
+      case 'es': return 'Hoy';
+      case 'de': return 'Heute';
+      default: return 'Today';
+    }
+  }
+
+  String _getThisMonthText(String localeName) {
+    switch (localeName) {
+      case 'ko': return '이번 달 기록';
+      case 'ja': return '今月の記録';
+      case 'zh': return '本月記錄';
+      case 'es': return 'Este mes';
+      case 'de': return 'Diesen Monat';
+      default: return 'This Month';
+    }
+  }
+
+  String _getDaysLabel(String localeName) {
+    switch (localeName) {
+      case 'ko': return '기록한 날';
+      case 'ja': return '記録日数';
+      case 'zh': return '記錄天數';
+      case 'es': return 'Días';
+      case 'de': return 'Tage';
+      default: return 'Days';
+    }
+  }
+
+  String _getStreakLabel(String localeName) {
+    switch (localeName) {
+      case 'ko': return '연속 기록';
+      case 'ja': return '連続記録';
+      case 'zh': return '連續記錄';
+      case 'es': return 'Racha';
+      case 'de': return 'Serie';
+      default: return 'Streak';
+    }
+  }
+
+  String _getRateLabel(String localeName) {
+    switch (localeName) {
+      case 'ko': return '달성률';
+      case 'ja': return '達成率';
+      case 'zh': return '達成率';
+      case 'es': return 'Tasa';
+      case 'de': return 'Rate';
+      default: return 'Rate';
+    }
   }
 
   int _calculateStreak() {
@@ -122,6 +210,7 @@ class _CalendarPageState extends State<CalendarPage> {
     final l10n = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final themeColors = context.watch<SettingsService>().currentThemeColors;
+    final lang = l10n.localeName;
 
     return Scaffold(
       backgroundColor: isDark ? themeColors.darkBackground : themeColors.lightBackground,
@@ -131,13 +220,13 @@ class _CalendarPageState extends State<CalendarPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(l10n, isDark, themeColors),
+              _buildHeader(lang, isDark, themeColors),
               const SizedBox(height: 24),
-              _buildWeekdayHeader(l10n, isDark, themeColors),
+              _buildWeekdayHeader(lang, isDark, themeColors),
               const SizedBox(height: 12),
               Expanded(child: _buildCalendarGrid(isDark, themeColors)),
               const SizedBox(height: 16),
-              _buildStatsCard(l10n, isDark, themeColors),
+              _buildStatsCard(lang, isDark, themeColors),
             ],
           ),
         ),
@@ -145,7 +234,7 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-  Widget _buildHeader(AppLocalizations l10n, bool isDark, ThemeColors themeColors) {
+  Widget _buildHeader(String lang, bool isDark, ThemeColors themeColors) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -161,9 +250,7 @@ class _CalendarPageState extends State<CalendarPage> {
             ),
             const SizedBox(width: 8),
             Text(
-              l10n.localeName == 'ko'
-                  ? '${_currentMonth.year}년 ${_currentMonth.month}월'
-                  : '${_getMonthName(_currentMonth.month)} ${_currentMonth.year}',
+              _formatYearMonth(lang, _currentMonth),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -192,7 +279,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
-                  l10n.localeName == 'ko' ? '오늘' : 'Today',
+                  _getTodayText(lang),
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
@@ -209,17 +296,8 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-  String _getMonthName(int month) {
-    const months = [
-      'January', 'February', 'March', 'April',
-      'May', 'June', 'July', 'August',
-      'September', 'October', 'November', 'December'
-    ];
-    return months[month - 1];
-  }
-
-  Widget _buildWeekdayHeader(AppLocalizations l10n, bool isDark, ThemeColors themeColors) {
-    final weekdays = _getWeekdays(l10n);
+  Widget _buildWeekdayHeader(String lang, bool isDark, ThemeColors themeColors) {
+    final weekdays = _getWeekdays(lang);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: weekdays.asMap().entries.map((entry) {
@@ -342,7 +420,7 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-  Widget _buildStatsCard(AppLocalizations l10n, bool isDark, ThemeColors themeColors) {
+  Widget _buildStatsCard(String lang, bool isDark, ThemeColors themeColors) {
     final thisMonthRecords = _recordedDates
         .where((d) => d.year == _currentMonth.year && d.month == _currentMonth.month)
         .length;
@@ -372,7 +450,7 @@ class _CalendarPageState extends State<CalendarPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            l10n.localeName == 'ko' ? '이번 달 기록' : 'This Month',
+            _getThisMonthText(lang),
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
@@ -385,19 +463,19 @@ class _CalendarPageState extends State<CalendarPage> {
             children: [
               _buildStatItem(
                 value: '$thisMonthRecords',
-                label: l10n.localeName == 'ko' ? '기록한 날' : 'Days',
+                label: _getDaysLabel(lang),
                 isDark: isDark,
                 themeColors: themeColors,
               ),
               _buildStatItem(
                 value: '$streak',
-                label: l10n.localeName == 'ko' ? '연속 기록' : 'Streak',
+                label: _getStreakLabel(lang),
                 isDark: isDark,
                 themeColors: themeColors,
               ),
               _buildStatItem(
                 value: '$percentage%',
-                label: l10n.localeName == 'ko' ? '달성률' : 'Rate',
+                label: _getRateLabel(lang),
                 isDark: isDark,
                 themeColors: themeColors,
               ),

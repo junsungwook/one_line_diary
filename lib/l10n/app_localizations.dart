@@ -96,7 +96,6 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsZh();
   }
 
-  throw FlutterError(
-    'AppLocalizations.delegate failed to load unsupported locale "$locale".',
-  );
+  // Fallback to English
+  return AppLocalizationsEn();
 }

@@ -72,25 +72,107 @@ class _WritePageState extends State<WritePage> {
     _focusNode.unfocus();
   }
 
-  String _formatYearMonth(AppLocalizations l10n) {
+  String _formatYearMonth(String localeName) {
     final d = _today;
-    if (l10n.localeName == 'ko') {
-      return '${d.year}년 ${d.month}월';
+    switch (localeName) {
+      case 'ko':
+        return '${d.year}년 ${d.month}월';
+      case 'ja':
+        return '${d.year}年${d.month}月';
+      case 'zh':
+        return '${d.year}年${d.month}月';
+      case 'de':
+        const months = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+          'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+        return '${months[d.month - 1]} ${d.year}';
+      case 'es':
+        const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+          'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        return '${months[d.month - 1]} ${d.year}';
+      default:
+        const months = ['January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September', 'October', 'November', 'December'];
+        return '${months[d.month - 1]} ${d.year}';
     }
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    return '${months[d.month - 1]} ${d.year}';
   }
 
-  String _getWeekday(AppLocalizations l10n) {
-    if (l10n.localeName == 'ko') {
-      const days = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
-      return days[_today.weekday - 1];
+  String _getWeekday(String localeName) {
+    final weekday = _today.weekday - 1;
+    switch (localeName) {
+      case 'ko':
+        const days = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
+        return days[weekday];
+      case 'ja':
+        const days = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日', '日曜日'];
+        return days[weekday];
+      case 'zh':
+        const days = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
+        return days[weekday];
+      case 'es':
+        const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+        return days[weekday];
+      case 'de':
+        const days = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+        return days[weekday];
+      default:
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        return days[weekday];
     }
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    return days[_today.weekday - 1];
+  }
+
+  String _getTodayText(String localeName) {
+    switch (localeName) {
+      case 'ko': return '오늘';
+      case 'ja': return '今日';
+      case 'zh': return '今天';
+      case 'es': return 'Hoy';
+      case 'de': return 'Heute';
+      default: return 'Today';
+    }
+  }
+
+  String _getCancelText(String localeName) {
+    switch (localeName) {
+      case 'ko': return '취소';
+      case 'ja': return 'キャンセル';
+      case 'zh': return '取消';
+      case 'es': return 'Cancelar';
+      case 'de': return 'Abbrechen';
+      default: return 'Cancel';
+    }
+  }
+
+  String _getSaveText(String localeName) {
+    switch (localeName) {
+      case 'ko': return '저장';
+      case 'ja': return '保存';
+      case 'zh': return '儲存';
+      case 'es': return 'Guardar';
+      case 'de': return 'Speichern';
+      default: return 'Save';
+    }
+  }
+
+  String _getTodaysLineText(String localeName) {
+    switch (localeName) {
+      case 'ko': return '오늘의 한 줄';
+      case 'ja': return '今日の一行';
+      case 'zh': return '今天的一行';
+      case 'es': return 'Línea de hoy';
+      case 'de': return 'Zeile des Tages';
+      default: return "Today's line";
+    }
+  }
+
+  String _getTapToWriteText(String localeName) {
+    switch (localeName) {
+      case 'ko': return '탭하여 오늘을 기록하세요';
+      case 'ja': return 'タップして今日を記録';
+      case 'zh': return '點擊記錄今天';
+      case 'es': return 'Toca para escribir';
+      case 'de': return 'Tippen zum Schreiben';
+      default: return 'Tap to write about today';
+    }
   }
 
   @override
@@ -106,6 +188,7 @@ class _WritePageState extends State<WritePage> {
     final l10n = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final themeColors = context.watch<SettingsService>().currentThemeColors;
+    final lang = l10n.localeName;
 
     return Scaffold(
       backgroundColor: isDark ? themeColors.darkBackground : themeColors.lightBackground,
@@ -132,7 +215,7 @@ class _WritePageState extends State<WritePage> {
                               color: isDark ? themeColors.darkTextSecondary : themeColors.lightTextSecondary,
                             ),
                             Text(
-                              l10n.localeName == 'ko' ? '취소' : 'Cancel',
+                              _getCancelText(lang),
                               style: TextStyle(
                                 fontSize: 16,
                                 color: isDark ? themeColors.darkTextSecondary : themeColors.lightTextSecondary,
@@ -155,7 +238,7 @@ class _WritePageState extends State<WritePage> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            l10n.localeName == 'ko' ? '저장' : 'Save',
+                            _getSaveText(lang),
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -184,7 +267,7 @@ class _WritePageState extends State<WritePage> {
                         const SizedBox(height: 20),
                         // 년/월
                         Text(
-                          _formatYearMonth(l10n),
+                          _formatYearMonth(lang),
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
@@ -204,7 +287,7 @@ class _WritePageState extends State<WritePage> {
                         ),
                         // 요일
                         Text(
-                          _getWeekday(l10n),
+                          _getWeekday(lang),
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w500,
@@ -215,7 +298,7 @@ class _WritePageState extends State<WritePage> {
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(
-                            l10n.localeName == 'ko' ? '오늘' : 'Today',
+                            _getTodayText(lang),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
@@ -249,7 +332,7 @@ class _WritePageState extends State<WritePage> {
                       children: [
                         if (!_isEditing) ...[
                           Text(
-                            l10n.localeName == 'ko' ? '오늘의 한 줄' : "Today's line",
+                            _getTodaysLineText(lang),
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -305,7 +388,7 @@ class _WritePageState extends State<WritePage> {
                           Text(
                             _controller.text.isNotEmpty
                                 ? _controller.text
-                                : (l10n.localeName == 'ko' ? '탭하여 오늘을 기록하세요' : 'Tap to write about today'),
+                                : _getTapToWriteText(lang),
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w400,

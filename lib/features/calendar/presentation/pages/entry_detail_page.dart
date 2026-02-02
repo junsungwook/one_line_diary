@@ -73,53 +73,156 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
     }
   }
 
-  String _formatYear(AppLocalizations l10n) {
-    if (l10n.localeName == 'ko') {
-      return '${_currentDate.year}년';
+  String _formatYear(String lang) {
+    switch (lang) {
+      case 'ko':
+        return '${_currentDate.year}년';
+      case 'ja':
+        return '${_currentDate.year}年';
+      case 'zh':
+        return '${_currentDate.year}年';
+      default:
+        return '${_currentDate.year}';
     }
-    return '${_currentDate.year}';
   }
 
-  String _formatMonthDay(AppLocalizations l10n) {
-    if (l10n.localeName == 'ko') {
-      return '${_currentDate.month}월 ${_currentDate.day}일';
+  String _formatMonthDay(String lang) {
+    final m = _currentDate.month;
+    final d = _currentDate.day;
+    switch (lang) {
+      case 'ko':
+        return '${m}월 ${d}일';
+      case 'ja':
+        return '${m}月${d}日';
+      case 'zh':
+        return '${m}月${d}日';
+      case 'de':
+        const months = ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni',
+          'Juli', 'Aug.', 'Sept.', 'Okt.', 'Nov.', 'Dez.'];
+        return '$d. ${months[m - 1]}';
+      case 'es':
+        const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+          'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+        return '$d de ${months[m - 1]}';
+      default:
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return '${months[m - 1]} $d';
     }
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return '${months[_currentDate.month - 1]} ${_currentDate.day}';
   }
 
-  String _formatWeekday(AppLocalizations l10n) {
-    if (l10n.localeName == 'ko') {
-      const days = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
-      return days[_currentDate.weekday - 1];
+  String _formatWeekday(String lang) {
+    final weekday = _currentDate.weekday - 1;
+    switch (lang) {
+      case 'ko':
+        const days = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
+        return days[weekday];
+      case 'ja':
+        const days = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日', '日曜日'];
+        return days[weekday];
+      case 'zh':
+        const days = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
+        return days[weekday];
+      case 'es':
+        const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+        return days[weekday];
+      case 'de':
+        const days = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+        return days[weekday];
+      default:
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        return days[weekday];
     }
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    return days[_currentDate.weekday - 1];
   }
 
-  String _formatNavDate(DateTime date, AppLocalizations l10n) {
-    if (l10n.localeName == 'ko') {
-      return '${date.month}월 ${date.day}일';
+  String _formatNavDate(DateTime date, String lang) {
+    final m = date.month;
+    final d = date.day;
+    switch (lang) {
+      case 'ko':
+        return '${m}월 ${d}일';
+      case 'ja':
+        return '${m}月${d}日';
+      case 'zh':
+        return '${m}月${d}日';
+      case 'de':
+        const months = ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni',
+          'Juli', 'Aug.', 'Sept.', 'Okt.', 'Nov.', 'Dez.'];
+        return '$d. ${months[m - 1]}';
+      case 'es':
+        const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+          'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+        return '$d de ${months[m - 1]}';
+      default:
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return '${months[m - 1]} $d';
     }
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return '${months[date.month - 1]} ${date.day}';
   }
 
-  String _formatTime(DateTime time, AppLocalizations l10n) {
+  String _formatTime(DateTime time, String lang) {
     final hour = time.hour;
     final minute = time.minute.toString().padLeft(2, '0');
 
-    if (l10n.localeName == 'ko') {
-      if (hour < 12) {
-        return '오전 ${hour == 0 ? 12 : hour}:$minute에 기록됨';
-      } else {
-        return '오후 ${hour == 12 ? 12 : hour - 12}:$minute에 기록됨';
-      }
+    switch (lang) {
+      case 'ko':
+        if (hour < 12) {
+          return '오전 ${hour == 0 ? 12 : hour}:$minute에 기록됨';
+        } else {
+          return '오후 ${hour == 12 ? 12 : hour - 12}:$minute에 기록됨';
+        }
+      case 'ja':
+        if (hour < 12) {
+          return '午前${hour == 0 ? 12 : hour}:${minute}に記録';
+        } else {
+          return '午後${hour == 12 ? 12 : hour - 12}:${minute}に記録';
+        }
+      case 'zh':
+        if (hour < 12) {
+          return '上午${hour == 0 ? 12 : hour}:$minute記錄';
+        } else {
+          return '下午${hour == 12 ? 12 : hour - 12}:$minute記錄';
+        }
+      case 'de':
+        return 'Aufgezeichnet um $hour:$minute Uhr';
+      case 'es':
+        return 'Registrado a las $hour:$minute';
+      default:
+        final amPm = hour < 12 ? 'AM' : 'PM';
+        final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+        return 'Recorded at $displayHour:$minute $amPm';
     }
+  }
 
-    final amPm = hour < 12 ? 'AM' : 'PM';
-    final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
-    return 'Recorded at $displayHour:$minute $amPm';
+  String _getCalendarText(String lang) {
+    switch (lang) {
+      case 'ko': return '캘린더';
+      case 'ja': return 'カレンダー';
+      case 'zh': return '日曆';
+      case 'es': return 'Calendario';
+      case 'de': return 'Kalender';
+      default: return 'Calendar';
+    }
+  }
+
+  String _getEditText(String lang) {
+    switch (lang) {
+      case 'ko': return '수정';
+      case 'ja': return '編集';
+      case 'zh': return '編輯';
+      case 'es': return 'Editar';
+      case 'de': return 'Bearbeiten';
+      default: return 'Edit';
+    }
+  }
+
+  String _getNoEntryText(String lang) {
+    switch (lang) {
+      case 'ko': return '기록이 없습니다';
+      case 'ja': return '記録がありません';
+      case 'zh': return '沒有記錄';
+      case 'es': return 'Sin entrada';
+      case 'de': return 'Kein Eintrag';
+      default: return 'No entry';
+    }
   }
 
   @override
@@ -127,6 +230,7 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
     final l10n = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final themeColors = context.watch<SettingsService>().currentThemeColors;
+    final lang = l10n.localeName;
 
     final entry = diaryService.getEntry(_currentDate);
     final prevDate = _findPreviousRecordedDate();
@@ -153,7 +257,7 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
                           color: isDark ? themeColors.darkTextSecondary : themeColors.lightTextSecondary,
                         ),
                         Text(
-                          l10n.localeName == 'ko' ? '캘린더' : 'Calendar',
+                          _getCalendarText(lang),
                           style: TextStyle(
                             fontSize: 16,
                             color: isDark ? themeColors.darkTextSecondary : themeColors.lightTextSecondary,
@@ -167,7 +271,7 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
                       // TODO: 수정 기능
                     },
                     child: Text(
-                      l10n.localeName == 'ko' ? '수정' : 'Edit',
+                      _getEditText(lang),
                       style: TextStyle(
                         fontSize: 16,
                         color: isDark ? themeColors.darkTextSecondary : themeColors.lightTextSecondary,
@@ -186,7 +290,7 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _formatYear(l10n),
+                    _formatYear(lang),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
@@ -195,7 +299,7 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _formatMonthDay(l10n),
+                    _formatMonthDay(lang),
                     style: TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.w700,
@@ -204,7 +308,7 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _formatWeekday(l10n),
+                    _formatWeekday(lang),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
@@ -240,7 +344,7 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
                         ),
                           const SizedBox(height: 16),
                           Text(
-                            _formatTime(entry.createdAt, l10n),
+                            _formatTime(entry.createdAt, lang),
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -252,7 +356,7 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
                     )
                   : Center(
                       child: Text(
-                        l10n.localeName == 'ko' ? '기록이 없습니다' : 'No entry',
+                        _getNoEntryText(lang),
                         style: TextStyle(
                           fontSize: 16,
                           color: isDark ? themeColors.darkTextSecondary : themeColors.lightTextSecondary,
@@ -279,7 +383,7 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
                               : Colors.transparent,
                         ),
                         Text(
-                          prevDate != null ? _formatNavDate(prevDate, l10n) : '',
+                          prevDate != null ? _formatNavDate(prevDate, lang) : '',
                           style: TextStyle(
                             fontSize: 14,
                             color: isDark ? themeColors.darkTextSecondary : themeColors.lightTextSecondary,
@@ -293,7 +397,7 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
                     child: Row(
                       children: [
                         Text(
-                          nextDate != null ? _formatNavDate(nextDate, l10n) : '',
+                          nextDate != null ? _formatNavDate(nextDate, lang) : '',
                           style: TextStyle(
                             fontSize: 14,
                             color: isDark ? themeColors.darkTextSecondary : themeColors.lightTextSecondary,

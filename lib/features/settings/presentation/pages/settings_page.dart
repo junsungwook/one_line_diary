@@ -6,8 +6,15 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../services/settings_service.dart';
 import '../../../../shared/widgets/dark_mode_button.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  bool _languageExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +27,7 @@ class SettingsPage extends StatelessWidget {
         return Scaffold(
           backgroundColor: isDark ? themeColors.darkBackground : themeColors.lightBackground,
           body: SafeArea(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,7 +45,7 @@ class SettingsPage extends StatelessWidget {
                       ),
                       const SizedBox(width: 16),
                       Text(
-                        l10n.localeName == 'ko' ? '설정' : 'Settings',
+                        _getSettingsText(l10n.localeName),
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
@@ -53,7 +60,7 @@ class SettingsPage extends StatelessWidget {
 
                   // Color Theme Section
                   Text(
-                    l10n.localeName == 'ko' ? '색상 테마' : 'Color Theme',
+                    _getColorThemeText(l10n.localeName),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -64,22 +71,9 @@ class SettingsPage extends StatelessWidget {
                   _buildThemeOptions(context, l10n, settings, isDark, themeColors),
                   const SizedBox(height: 28),
 
-                  // Language Section
+                  // Notification Section (moved up)
                   Text(
-                    l10n.localeName == 'ko' ? '언어' : 'Language',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: isDark ? themeColors.darkTextSecondary : themeColors.lightTextSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildLanguageOptions(context, l10n, settings, isDark, themeColors),
-                  const SizedBox(height: 28),
-
-                  // Notification Section
-                  Text(
-                    l10n.localeName == 'ko' ? '알림' : 'Notification',
+                    _getNotificationText(l10n.localeName),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -88,6 +82,20 @@ class SettingsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   _buildNotificationOptions(context, l10n, settings, isDark, themeColors),
+                  const SizedBox(height: 28),
+
+                  // Language Section (collapsible)
+                  Text(
+                    _getLanguageText(l10n.localeName),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: isDark ? themeColors.darkTextSecondary : themeColors.lightTextSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildLanguageSelector(context, l10n, settings, isDark, themeColors),
+                  const SizedBox(height: 32),
                 ],
               ),
             ),
@@ -97,7 +105,62 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildLanguageOptions(
+  String _getSettingsText(String localeName) {
+    switch (localeName) {
+      case 'ko': return '설정';
+      case 'ja': return '設定';
+      case 'zh': return '設定';
+      case 'es': return 'Ajustes';
+      case 'de': return 'Einstellungen';
+      default: return 'Settings';
+    }
+  }
+
+  String _getColorThemeText(String localeName) {
+    switch (localeName) {
+      case 'ko': return '색상 테마';
+      case 'ja': return 'カラーテーマ';
+      case 'zh': return '顏色主題';
+      case 'es': return 'Tema de color';
+      case 'de': return 'Farbthema';
+      default: return 'Color Theme';
+    }
+  }
+
+  String _getNotificationText(String localeName) {
+    switch (localeName) {
+      case 'ko': return '알림';
+      case 'ja': return '通知';
+      case 'zh': return '通知';
+      case 'es': return 'Notificación';
+      case 'de': return 'Benachrichtigung';
+      default: return 'Notification';
+    }
+  }
+
+  String _getLanguageText(String localeName) {
+    switch (localeName) {
+      case 'ko': return '언어';
+      case 'ja': return '言語';
+      case 'zh': return '語言';
+      case 'es': return 'Idioma';
+      case 'de': return 'Sprache';
+      default: return 'Language';
+    }
+  }
+
+  String _getCurrentLanguageName(SettingsService settings) {
+    if (settings.isSystemDefault) return _getSystemDefaultText(AppLocalizations.of(context).localeName);
+    if (settings.isKorean) return '한국어';
+    if (settings.isEnglish) return 'English';
+    if (settings.isJapanese) return '日本語';
+    if (settings.isChinese) return '繁體中文';
+    if (settings.isSpanish) return 'Español';
+    if (settings.isGerman) return 'Deutsch';
+    return 'System Default';
+  }
+
+  Widget _buildLanguageSelector(
       BuildContext context, AppLocalizations l10n, SettingsService settings, bool isDark, ThemeColors themeColors) {
     return Container(
       decoration: BoxDecoration(
@@ -106,70 +169,114 @@ class SettingsPage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildLanguageOption(
-            context: context,
-            title: _getSystemDefaultText(l10n.localeName),
-            isSelected: settings.isSystemDefault,
-            onTap: () => settings.setLocale(null),
-            isFirst: true,
-            isDark: isDark,
-            themeColors: themeColors,
+          // 현재 선택된 언어 표시 (탭하면 펼침)
+          GestureDetector(
+            onTap: () => setState(() => _languageExpanded = !_languageExpanded),
+            behavior: HitTestBehavior.opaque,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      _getCurrentLanguageName(settings),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: isDark ? themeColors.darkTextPrimary : themeColors.lightTextPrimary,
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    _languageExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    size: 24,
+                    color: isDark ? themeColors.darkTextSecondary : themeColors.lightTextSecondary,
+                  ),
+                ],
+              ),
+            ),
           ),
-          _buildDivider(isDark, themeColors),
-          _buildLanguageOption(
-            context: context,
-            title: '한국어',
-            isSelected: settings.isKorean,
-            onTap: () => settings.setLocale(const Locale('ko')),
-            isDark: isDark,
-            themeColors: themeColors,
-          ),
-          _buildDivider(isDark, themeColors),
-          _buildLanguageOption(
-            context: context,
-            title: 'English',
-            isSelected: settings.isEnglish,
-            onTap: () => settings.setLocale(const Locale('en')),
-            isDark: isDark,
-            themeColors: themeColors,
-          ),
-          _buildDivider(isDark, themeColors),
-          _buildLanguageOption(
-            context: context,
-            title: '日本語',
-            isSelected: settings.isJapanese,
-            onTap: () => settings.setLocale(const Locale('ja')),
-            isDark: isDark,
-            themeColors: themeColors,
-          ),
-          _buildDivider(isDark, themeColors),
-          _buildLanguageOption(
-            context: context,
-            title: '繁體中文',
-            isSelected: settings.isChinese,
-            onTap: () => settings.setLocale(const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant')),
-            isDark: isDark,
-            themeColors: themeColors,
-          ),
-          _buildDivider(isDark, themeColors),
-          _buildLanguageOption(
-            context: context,
-            title: 'Español',
-            isSelected: settings.isSpanish,
-            onTap: () => settings.setLocale(const Locale('es')),
-            isDark: isDark,
-            themeColors: themeColors,
-          ),
-          _buildDivider(isDark, themeColors),
-          _buildLanguageOption(
-            context: context,
-            title: 'Deutsch',
-            isSelected: settings.isGerman,
-            onTap: () => settings.setLocale(const Locale('de')),
-            isLast: true,
-            isDark: isDark,
-            themeColors: themeColors,
-          ),
+          // 펼쳐진 언어 목록
+          if (_languageExpanded) ...[
+            _buildDivider(isDark, themeColors),
+            _buildLanguageOption(
+              title: _getSystemDefaultText(l10n.localeName),
+              isSelected: settings.isSystemDefault,
+              onTap: () {
+                settings.setLocale(null);
+                setState(() => _languageExpanded = false);
+              },
+              isDark: isDark,
+              themeColors: themeColors,
+            ),
+            _buildDivider(isDark, themeColors),
+            _buildLanguageOption(
+              title: '한국어',
+              isSelected: settings.isKorean,
+              onTap: () {
+                settings.setLocale(const Locale('ko'));
+                setState(() => _languageExpanded = false);
+              },
+              isDark: isDark,
+              themeColors: themeColors,
+            ),
+            _buildDivider(isDark, themeColors),
+            _buildLanguageOption(
+              title: 'English',
+              isSelected: settings.isEnglish,
+              onTap: () {
+                settings.setLocale(const Locale('en'));
+                setState(() => _languageExpanded = false);
+              },
+              isDark: isDark,
+              themeColors: themeColors,
+            ),
+            _buildDivider(isDark, themeColors),
+            _buildLanguageOption(
+              title: '日本語',
+              isSelected: settings.isJapanese,
+              onTap: () {
+                settings.setLocale(const Locale('ja'));
+                setState(() => _languageExpanded = false);
+              },
+              isDark: isDark,
+              themeColors: themeColors,
+            ),
+            _buildDivider(isDark, themeColors),
+            _buildLanguageOption(
+              title: '繁體中文',
+              isSelected: settings.isChinese,
+              onTap: () {
+                settings.setLocale(const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'));
+                setState(() => _languageExpanded = false);
+              },
+              isDark: isDark,
+              themeColors: themeColors,
+            ),
+            _buildDivider(isDark, themeColors),
+            _buildLanguageOption(
+              title: 'Español',
+              isSelected: settings.isSpanish,
+              onTap: () {
+                settings.setLocale(const Locale('es'));
+                setState(() => _languageExpanded = false);
+              },
+              isDark: isDark,
+              themeColors: themeColors,
+            ),
+            _buildDivider(isDark, themeColors),
+            _buildLanguageOption(
+              title: 'Deutsch',
+              isSelected: settings.isGerman,
+              onTap: () {
+                settings.setLocale(const Locale('de'));
+                setState(() => _languageExpanded = false);
+              },
+              isDark: isDark,
+              themeColors: themeColors,
+              isLast: true,
+            ),
+          ],
         ],
       ),
     );
@@ -187,23 +294,20 @@ class SettingsPage extends StatelessWidget {
   }
 
   Widget _buildLanguageOption({
-    required BuildContext context,
     required String title,
     required bool isSelected,
     required VoidCallback onTap,
     required bool isDark,
     required ThemeColors themeColors,
-    bool isFirst = false,
     bool isLast = false,
   }) {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(
-            top: isFirst ? const Radius.circular(16) : Radius.zero,
             bottom: isLast ? const Radius.circular(16) : Radius.zero,
           ),
         ),
@@ -213,8 +317,8 @@ class SettingsPage extends StatelessWidget {
               child: Text(
                 title,
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
                   color: isDark ? themeColors.darkTextPrimary : themeColors.lightTextPrimary,
                 ),
               ),
@@ -222,7 +326,7 @@ class SettingsPage extends StatelessWidget {
             if (isSelected)
               const Icon(
                 Icons.check_rounded,
-                size: 22,
+                size: 20,
                 color: AppColors.primary,
               ),
           ],
@@ -345,7 +449,7 @@ class SettingsPage extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    l10n.localeName == 'ko' ? '일기 알림' : 'Diary Reminder',
+                    _getDiaryReminderText(l10n.localeName),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -375,7 +479,7 @@ class SettingsPage extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        l10n.localeName == 'ko' ? '알림 시간' : 'Notification Time',
+                        _getNotificationTimeText(l10n.localeName),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -385,7 +489,7 @@ class SettingsPage extends StatelessWidget {
                     ),
                     Text(
                       _formatTime(settings.notificationTime, l10n),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                         color: AppColors.primary,
@@ -405,6 +509,28 @@ class SettingsPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _getDiaryReminderText(String localeName) {
+    switch (localeName) {
+      case 'ko': return '일기 알림';
+      case 'ja': return '日記リマインダー';
+      case 'zh': return '日記提醒';
+      case 'es': return 'Recordatorio';
+      case 'de': return 'Tagebuch-Erinnerung';
+      default: return 'Diary Reminder';
+    }
+  }
+
+  String _getNotificationTimeText(String localeName) {
+    switch (localeName) {
+      case 'ko': return '알림 시간';
+      case 'ja': return '通知時間';
+      case 'zh': return '通知時間';
+      case 'es': return 'Hora';
+      case 'de': return 'Uhrzeit';
+      default: return 'Time';
+    }
   }
 
   String _formatTime(TimeOfDay time, AppLocalizations l10n) {
@@ -444,12 +570,10 @@ class SettingsPage extends StatelessWidget {
 
   Future<void> _handleNotificationToggle(bool value, SettingsService settings, AppLocalizations l10n) async {
     if (value) {
-      // 알림 켜기
       await notificationService.requestPermission();
       await settings.setNotificationEnabled(true);
       _scheduleNotification(settings, l10n);
     } else {
-      // 알림 끄기
       await settings.setNotificationEnabled(false);
       await notificationService.cancelAllNotifications();
     }
