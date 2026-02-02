@@ -1,81 +1,84 @@
-# 한 줄 기록 (One Line Diary)
+# one line
 
 하루 끝에 한 줄만 기록하는 초간단 일기 앱
 
-## Screenshots
+복잡한 일기는 그만. 오늘 하루를 딱 한 문장으로 정리하세요.
 
-<!-- 스크린샷 추가 예정 -->
+## 주요 기능
 
-## Features
+### 한 줄 기록
+- 최대 50자로 오늘 하루를 기록
+- 탭 한 번으로 간편하게 작성
+- 오늘 날짜만 작성 가능 (과거는 읽기 전용)
 
-- **한 줄 기록**: 매일 간단하게 한 줄로 하루를 기록
-- **달력 뷰**: 기록한 날짜를 한눈에 확인
-- **다크/라이트 모드**: 눈이 편한 테마 선택
-- **3가지 색상 테마**: Milk & Gray Blue, Plum & Milk, Cloud & Smog
-- **다국어 지원**: 한국어, English
-- **로컬 저장**: 서버 없이 기기에 안전하게 저장
+### 캘린더
+- 월간 달력으로 기록 현황 한눈에 확인
+- 기록한 날짜에 주황색 점 표시
+- 통계: 기록한 날, 연속 기록, 이번 달 달성률
 
-## Tech Stack
+### 알림
+- 원하는 시간에 매일 알림
+- 상황에 맞는 다양한 멘트
 
-- **Framework**: Flutter
-- **State Management**: Provider
-- **Local Database**: Hive
-- **Localization**: Flutter intl (ARB)
+### 홈 화면 위젯
+- iOS/Android 홈 화면 위젯 지원
+- 기록 전/후 다른 디자인
+- 탭하면 바로 앱 열기
 
-## Project Structure
+### 개인화
+- 다크/라이트 모드
+- 3가지 색상 테마
+- 한국어/영어 지원
 
-```
-lib/
-├── main.dart
-├── app.dart
-├── bootstrap.dart
-├── core/
-│   ├── router/          # 라우팅 설정
-│   └── theme/           # 테마, 색상 정의
-├── features/
-│   ├── calendar/        # 달력 화면
-│   ├── home/            # 홈 화면
-│   ├── settings/        # 설정 화면
-│   └── write/           # 일기 입력 화면
-├── l10n/                # 다국어 리소스
-├── models/              # 데이터 모델
-├── services/            # 비즈니스 로직
-└── shared/              # 공유 위젯
-```
+## 기술 스택
 
-## Getting Started
+| 구분 | 기술 |
+|------|------|
+| Framework | Flutter |
+| 상태관리 | Provider |
+| 로컬 DB | Hive |
+| 알림 | flutter_local_notifications |
+| 위젯 | WidgetKit (iOS), AppWidgetProvider (Android) |
 
-### Prerequisites
-
-- Flutter SDK 3.0+
-- Dart 3.0+
-
-### Installation
+## 시작하기
 
 ```bash
 # 의존성 설치
 flutter pub get
 
-# 앱 실행
+# 실행
 flutter run
-
-# 웹에서 실행
-flutter run -d chrome
 ```
 
-### Build
+## 빌드
 
 ```bash
-# Android APK
-flutter build apk
+# Android (Play Store)
+flutter build appbundle --release
 
-# iOS
-flutter build ios
-
-# Web
-flutter build web
+# iOS (App Store)
+flutter build ipa --release
 ```
 
-## License
+## 프로젝트 구조
+
+```
+lib/
+├── core/           # 테마, 유틸리티
+├── features/       # 화면별 기능
+│   ├── write/      # 기록 작성
+│   ├── calendar/   # 캘린더 + 상세
+│   └── settings/   # 설정
+├── services/       # 비즈니스 로직
+├── models/         # 데이터 모델
+└── l10n/           # 다국어
+```
+
+## 개인정보처리방침
+
+- [한국어](https://junsungwook.github.io/one_line_diary/privacy-ko.html)
+- [English](https://junsungwook.github.io/one_line_diary/privacy-en.html)
+
+## 라이선스
 
 MIT License
