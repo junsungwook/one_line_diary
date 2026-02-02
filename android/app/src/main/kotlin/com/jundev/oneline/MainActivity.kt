@@ -1,4 +1,4 @@
-package com.example.run_pg
+package com.jundev.oneline
 
 import io.flutter.embedding.android.FlutterActivity
 
