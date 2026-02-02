@@ -13,13 +13,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
-  DateTime _selectedDate = DateTime.now();
+  late final PageController _pageController;
 
-  void _onDateSelected(DateTime date) {
-    setState(() {
-      _selectedDate = date;
-      _currentIndex = 0;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   void _openSettings() {
@@ -48,14 +53,12 @@ class _HomePageState extends State<HomePage> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: [
-          WritePage(
-            key: ValueKey(_selectedDate),
-            selectedDate: _selectedDate,
-          ),
-          CalendarPage(onDateSelected: _onDateSelected),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) => setState(() => _currentIndex = index),
+        children: const [
+          WritePage(),
+          CalendarPage(),
         ],
       ),
       bottomNavigationBar: _buildBottomNav(isDark),
@@ -108,7 +111,13 @@ class _HomePageState extends State<HomePage> {
   }) {
     final isActive = _currentIndex == index;
     return GestureDetector(
-      onTap: () => setState(() => _currentIndex = index),
+      onTap: () {
+        _pageController.animateToPage(
+          index,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutCubic,
+        );
+      },
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
