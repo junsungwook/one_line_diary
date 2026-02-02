@@ -65,6 +65,10 @@ class SettingsService extends ChangeNotifier {
 
   bool get isKorean => _locale?.languageCode == 'ko';
   bool get isEnglish => _locale?.languageCode == 'en';
+  bool get isJapanese => _locale?.languageCode == 'ja';
+  bool get isChinese => _locale?.languageCode == 'zh';
+  bool get isSpanish => _locale?.languageCode == 'es';
+  bool get isGerman => _locale?.languageCode == 'de';
   bool get isSystemDefault => _locale == null;
 
   Future<void> setNotificationEnabled(bool enabled) async {

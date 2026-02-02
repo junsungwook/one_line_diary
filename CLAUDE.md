@@ -16,7 +16,7 @@
 - **언어**: Dart
 - **DB**: Hive (로컬 저장, 서버 없음)
 - **상태관리**: Provider
-- **국제화**: flutter_localizations (한국어/영어)
+- **국제화**: flutter_localizations (한국어/영어/일본어/중국어 번체/스페인어/독일어)
 - **알림**: flutter_local_notifications, timezone, permission_handler
 - **위젯**: WidgetKit (iOS), AppWidgetProvider (Android)
 

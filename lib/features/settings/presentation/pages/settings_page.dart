@@ -108,7 +108,7 @@ class SettingsPage extends StatelessWidget {
         children: [
           _buildLanguageOption(
             context: context,
-            title: l10n.localeName == 'ko' ? '시스템 설정' : 'System Default',
+            title: _getSystemDefaultText(l10n.localeName),
             isSelected: settings.isSystemDefault,
             onTap: () => settings.setLocale(null),
             isFirst: true,
@@ -130,6 +130,42 @@ class SettingsPage extends StatelessWidget {
             title: 'English',
             isSelected: settings.isEnglish,
             onTap: () => settings.setLocale(const Locale('en')),
+            isDark: isDark,
+            themeColors: themeColors,
+          ),
+          _buildDivider(isDark, themeColors),
+          _buildLanguageOption(
+            context: context,
+            title: '日本語',
+            isSelected: settings.isJapanese,
+            onTap: () => settings.setLocale(const Locale('ja')),
+            isDark: isDark,
+            themeColors: themeColors,
+          ),
+          _buildDivider(isDark, themeColors),
+          _buildLanguageOption(
+            context: context,
+            title: '繁體中文',
+            isSelected: settings.isChinese,
+            onTap: () => settings.setLocale(const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant')),
+            isDark: isDark,
+            themeColors: themeColors,
+          ),
+          _buildDivider(isDark, themeColors),
+          _buildLanguageOption(
+            context: context,
+            title: 'Español',
+            isSelected: settings.isSpanish,
+            onTap: () => settings.setLocale(const Locale('es')),
+            isDark: isDark,
+            themeColors: themeColors,
+          ),
+          _buildDivider(isDark, themeColors),
+          _buildLanguageOption(
+            context: context,
+            title: 'Deutsch',
+            isSelected: settings.isGerman,
+            onTap: () => settings.setLocale(const Locale('de')),
             isLast: true,
             isDark: isDark,
             themeColors: themeColors,
@@ -137,6 +173,17 @@ class SettingsPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _getSystemDefaultText(String localeName) {
+    switch (localeName) {
+      case 'ko': return '시스템 설정';
+      case 'ja': return 'システム設定';
+      case 'zh': return '系統設定';
+      case 'es': return 'Predeterminado';
+      case 'de': return 'Systemstandard';
+      default: return 'System Default';
+    }
   }
 
   Widget _buildLanguageOption({
@@ -409,14 +456,9 @@ class SettingsPage extends StatelessWidget {
   }
 
   void _scheduleNotification(SettingsService settings, AppLocalizations l10n) {
-    final streak = diaryService.calculateStreak();
-    final daysSinceLastEntry = diaryService.getDaysSinceLastEntry();
-
     notificationService.scheduleDailyNotification(
       time: settings.notificationTime,
-      isKorean: l10n.localeName == 'ko',
-      currentStreak: streak,
-      daysSinceLastEntry: daysSinceLastEntry,
+      languageCode: l10n.localeName,
     );
   }
 }
