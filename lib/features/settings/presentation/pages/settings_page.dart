@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../bootstrap.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../services/settings_service.dart';
@@ -80,6 +81,19 @@ class SettingsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   _buildLanguageOptions(context, l10n, settings, isDark, themeColors),
+                  const SizedBox(height: 28),
+
+                  // Notification Section
+                  Text(
+                    l10n.localeName == 'ko' ? '알림' : 'Notification',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: isDark ? themeColors.darkTextSecondary : themeColors.lightTextSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildNotificationOptions(context, l10n, settings, isDark, themeColors),
                 ],
               ),
             ),
@@ -272,5 +286,143 @@ class SettingsPage extends StatelessWidget {
       case ColorTheme.cloudSmog:
         return l10n.localeName == 'ko' ? '클라우드 & 스모그' : 'Cloud & Smog';
     }
+  }
+
+  Widget _buildNotificationOptions(
+      BuildContext context, AppLocalizations l10n, SettingsService settings, bool isDark, ThemeColors themeColors) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? themeColors.darkSurface : themeColors.lightSurface,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          // 알림 토글
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.localeName == 'ko' ? '일기 알림' : 'Diary Reminder',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: isDark ? themeColors.darkTextPrimary : themeColors.lightTextPrimary,
+                    ),
+                  ),
+                ),
+                Switch.adaptive(
+                  value: settings.notificationEnabled,
+                  onChanged: (value) {
+                    _handleNotificationToggle(value, settings, l10n);
+                  },
+                  activeColor: AppColors.primary,
+                ),
+              ],
+            ),
+          ),
+          if (settings.notificationEnabled) ...[
+            _buildDivider(isDark, themeColors),
+            // 알림 시간 설정
+            GestureDetector(
+              onTap: () => _showTimePicker(context, settings, l10n),
+              behavior: HitTestBehavior.opaque,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        l10n.localeName == 'ko' ? '알림 시간' : 'Notification Time',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: isDark ? themeColors.darkTextPrimary : themeColors.lightTextPrimary,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      _formatTime(settings.notificationTime, l10n),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(
+                      Icons.chevron_right,
+                      size: 20,
+                      color: isDark ? themeColors.darkTextSecondary : themeColors.lightTextSecondary,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _formatTime(TimeOfDay time, AppLocalizations l10n) {
+    final hour = time.hour;
+    final minute = time.minute.toString().padLeft(2, '0');
+
+    if (l10n.localeName == 'ko') {
+      if (hour < 12) {
+        return '오전 ${hour == 0 ? 12 : hour}:$minute';
+      } else {
+        return '오후 ${hour == 12 ? 12 : hour - 12}:$minute';
+      }
+    }
+
+    final amPm = hour < 12 ? 'AM' : 'PM';
+    final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+    return '$displayHour:$minute $amPm';
+  }
+
+  Future<void> _showTimePicker(BuildContext context, SettingsService settings, AppLocalizations l10n) async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: settings.notificationTime,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      await settings.setNotificationTime(picked);
+      _scheduleNotification(settings, l10n);
+    }
+  }
+
+  Future<void> _handleNotificationToggle(bool value, SettingsService settings, AppLocalizations l10n) async {
+    if (value) {
+      // 알림 켜기
+      await notificationService.requestPermission();
+      await settings.setNotificationEnabled(true);
+      _scheduleNotification(settings, l10n);
+    } else {
+      // 알림 끄기
+      await settings.setNotificationEnabled(false);
+      await notificationService.cancelAllNotifications();
+    }
+  }
+
+  void _scheduleNotification(SettingsService settings, AppLocalizations l10n) {
+    final streak = diaryService.calculateStreak();
+    final daysSinceLastEntry = diaryService.getDaysSinceLastEntry();
+
+    notificationService.scheduleDailyNotification(
+      time: settings.notificationTime,
+      isKorean: l10n.localeName == 'ko',
+      currentStreak: streak,
+      daysSinceLastEntry: daysSinceLastEntry,
+    );
   }
 }

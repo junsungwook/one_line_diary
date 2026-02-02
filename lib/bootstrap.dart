@@ -5,9 +5,11 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'core/utils/logger.dart';
 import 'services/diary_service.dart';
 import 'services/settings_service.dart';
+import 'services/notification_service.dart';
 
 final diaryService = DiaryService();
 final settingsService = SettingsService();
+final notificationService = NotificationService();
 
 Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +29,10 @@ Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
   await Hive.initFlutter();
   await diaryService.init();
   await settingsService.init();
+
+  // 알림 서비스 초기화
+  await notificationService.initialize();
+
   Log.i('Hive & Services initialized');
 
   runApp(await builder());

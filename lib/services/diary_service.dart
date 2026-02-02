@@ -67,4 +67,41 @@ class DiaryService {
   String _dateKey(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
+
+  /// 연속 기록 일수 계산
+  int calculateStreak() {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    int streak = 0;
+    DateTime checkDate = today;
+
+    // 오늘 기록이 없으면 어제부터 체크
+    if (getEntry(today) == null) {
+      checkDate = today.subtract(const Duration(days: 1));
+    }
+
+    while (true) {
+      if (getEntry(checkDate) != null) {
+        streak++;
+        checkDate = checkDate.subtract(const Duration(days: 1));
+      } else {
+        break;
+      }
+    }
+
+    return streak;
+  }
+
+  /// 마지막 기록 이후 경과 일수
+  int getDaysSinceLastEntry() {
+    final entries = getAllEntries();
+    if (entries.isEmpty) return 999;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final lastDate = DateTime(entries.first.date.year, entries.first.date.month, entries.first.date.day);
+
+    return today.difference(lastDate).inDays;
+  }
 }
