@@ -10,7 +10,7 @@ class WidgetService {
     required int currentStreak,
     String? lastEntryContent,
   }) async {
-    if (!Platform.isIOS) return;
+    if (!Platform.isIOS && !Platform.isAndroid) return;
 
     try {
       await _channel.invokeMethod('updateWidgetData', {
@@ -26,7 +26,7 @@ class WidgetService {
 
   /// 위젯 새로고침 요청
   Future<void> reloadWidget() async {
-    if (!Platform.isIOS) return;
+    if (!Platform.isIOS && !Platform.isAndroid) return;
 
     try {
       await _channel.invokeMethod('reloadWidget');
