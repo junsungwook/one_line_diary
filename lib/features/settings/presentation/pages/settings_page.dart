@@ -6,12 +6,6 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../services/settings_service.dart';
 import '../../../../shared/widgets/dark_mode_button.dart';
 
-const _themeNames = {
-  ColorTheme.milkGrayBlue: ('Milk & Gray Blue', 'Milk & Gray Blue'),
-  ColorTheme.plumMilk: ('Plum & Milk', 'Plum & Milk'),
-  ColorTheme.cloudSmog: ('Cloud & Smog', 'Cloud & Smog'),
-};
-
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
@@ -317,7 +311,7 @@ class SettingsPage extends StatelessWidget {
                   onChanged: (value) {
                     _handleNotificationToggle(value, settings, l10n);
                   },
-                  activeColor: AppColors.primary,
+                  activeTrackColor: AppColors.primary,
                 ),
               ],
             ),

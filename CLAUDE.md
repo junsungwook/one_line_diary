@@ -16,8 +16,6 @@
 - **언어**: Dart
 - **DB**: Hive (로컬 저장, 서버 없음)
 - **상태관리**: Provider
-- **달력**: table_calendar
-- **라우팅**: go_router
 - **국제화**: flutter_localizations (한국어/영어)
 - **알림**: flutter_local_notifications, timezone, permission_handler
 - **위젯**: WidgetKit (iOS), AppWidgetProvider (Android)
@@ -37,7 +35,7 @@
 - **오늘 날짜만 작성 가능** (과거 날짜는 읽기 전용)
 
 ### 3. 캘린더 화면 (CalendarPage)
-- table_calendar 기반 월간 달력
+- 커스텀 월간 달력
 - 기록된 날짜에 주황색 점 표시
 - 일요일 빨간색, 토요일 파란색
 - **통계 카드**: 기록한 날, 연속 기록, 이번 달 달성률
@@ -98,9 +96,6 @@ lib/
 │   │   ├── app_theme.dart    # 라이트/다크 테마 정의
 │   │   ├── app_colors.dart   # 테마별 색상 정의
 │   │   └── app_text_styles.dart
-│   ├── router/
-│   │   ├── app_router.dart   # go_router 설정
-│   │   └── route_names.dart
 │   └── utils/
 │       └── logger.dart
 ├── features/

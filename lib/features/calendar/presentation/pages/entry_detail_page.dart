@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../bootstrap.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../services/settings_service.dart';
 
@@ -32,13 +31,6 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
 
   bool _hasRecord(DateTime day) {
     return _recordedDates.contains(DateTime(day.year, day.month, day.day));
-  }
-
-  bool _isFuture(DateTime day) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final target = DateTime(day.year, day.month, day.day);
-    return target.isAfter(today);
   }
 
   DateTime? _findPreviousRecordedDate() {

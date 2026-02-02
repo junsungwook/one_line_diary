@@ -9,20 +9,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
 
   # 상태 관리
   provider: ^6.1.2
 
-  # 라우팅
-  go_router: ^14.6.2
-
   # 로컬 DB
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-
-  # 달력
-  table_calendar: ^3.1.2
 
   # 국제화
   flutter_localizations:

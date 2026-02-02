@@ -66,33 +66,25 @@ abstract final class AppColors {
   // Primary - 부드러운 코랄/피치
   static const primary = Color(0xFFE8A87C);
   static const primaryLight = Color(0xFFF3C9A8);
-  static const primaryDark = Color(0xFFD4896A);
 
   // Secondary - 차분한 세이지 그린
   static const secondary = Color(0xFF85A392);
   static const secondaryLight = Color(0xFFA8C5B5);
 
   // 기본 Background (fallback)
-  static const backgroundLight = Color(0xFFFAFAFA);
   static const backgroundDark = Color(0xFF1A1A1A);
   static const surfaceLight = Color(0xFFFFFFFF);
   static const surfaceDark = Color(0xFF2A2A2A);
   static const cardLight = Color(0xFFFFFFFF);
 
   // Calendar dots
-  static const dotRecorded = Color(0xFF85A392);  // 기록된 날 - 세이지 그린
-  static const dotToday = Color(0xFFE8A87C);     // 오늘 - 코랄
-  static const dotEmpty = Color(0xFFE8E4DF);     // 빈 날
-  static const dotFuture = Color(0xFFF0EDE8);    // 미래
+  static const dotToday = Color(0xFFE8A87C);
 
   // Text
   static const textPrimaryLight = Color(0xFF3D3D3D);
   static const textSecondaryLight = Color(0xFF9A9590);
   static const textPrimaryDark = Color(0xFFF5F5F5);
   static const textSecondaryDark = Color(0xFFAAAAAA);
-
-  // Accent
-  static const accent = Color(0xFFD4A574);       // 골드/카라멜
 
   // Status
   static const error = Color(0xFFE57373);

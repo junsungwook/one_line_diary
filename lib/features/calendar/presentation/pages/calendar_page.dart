@@ -16,14 +16,12 @@ class CalendarPage extends StatefulWidget {
 
 class _CalendarPageState extends State<CalendarPage> {
   late DateTime _currentMonth;
-  late DateTime _selectedDay;
   Set<DateTime> _recordedDates = {};
 
   @override
   void initState() {
     super.initState();
     _currentMonth = DateTime.now();
-    _selectedDay = DateTime.now();
     _loadRecordedDates();
   }
 
@@ -49,7 +47,6 @@ class _CalendarPageState extends State<CalendarPage> {
   void _goToToday() {
     setState(() {
       _currentMonth = DateTime.now();
-      _selectedDay = DateTime.now();
     });
   }
 
@@ -58,12 +55,6 @@ class _CalendarPageState extends State<CalendarPage> {
     return day.year == now.year &&
         day.month == now.month &&
         day.day == now.day;
-  }
-
-  bool _isSelected(DateTime day) {
-    return day.year == _selectedDay.year &&
-        day.month == _selectedDay.month &&
-        day.day == _selectedDay.day;
   }
 
   bool _hasRecord(DateTime day) {
@@ -291,7 +282,6 @@ class _CalendarPageState extends State<CalendarPage> {
 
   Widget _buildDayCell(DateTime date, bool isDark, ThemeColors themeColors) {
     final isToday = _isToday(date);
-    final isSelected = _isSelected(date);
     final hasRecord = _hasRecord(date);
     final isFuture = _isFuture(date);
     final isSunday = date.weekday == 7;
@@ -310,7 +300,6 @@ class _CalendarPageState extends State<CalendarPage> {
 
     return GestureDetector(
       onTap: () {
-        setState(() => _selectedDay = date);
         _loadRecordedDates();
         if (hasRecord) {
           _openEntryDetail(date);

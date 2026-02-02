@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/theme/app_colors.dart';
 import '../../services/settings_service.dart';
 
 class DarkModeButton extends StatelessWidget {
