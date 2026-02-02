@@ -33,6 +33,9 @@ Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
   // 알림 서비스 초기화
   await notificationService.initialize();
 
+  // 위젯 동기화
+  await diaryService.syncWidget();
+
   Log.i('Hive & Services initialized');
 
   runApp(await builder());

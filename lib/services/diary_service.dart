@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 import '../models/diary_entry.dart';
+import 'widget_service.dart';
 
 class DiaryService {
   static const String _boxName = 'diary_entries';
@@ -18,11 +19,12 @@ class DiaryService {
     final dateKey = _dateKey(targetDate);
 
     final existing = _box.get(dateKey);
+    DiaryEntry result;
 
     if (existing != null) {
       final updated = existing.copyWith(content: content);
       await _box.put(dateKey, updated);
-      return updated;
+      result = updated;
     } else {
       final entry = DiaryEntry(
         id: _uuid.v4(),
@@ -31,8 +33,31 @@ class DiaryService {
         createdAt: DateTime.now(),
       );
       await _box.put(dateKey, entry);
-      return entry;
+      result = entry;
     }
+
+    // 위젯 업데이트
+    await _updateWidget();
+
+    return result;
+  }
+
+  /// 위젯 데이터 업데이트
+  Future<void> _updateWidget() async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final todayEntry = getEntry(today);
+
+    await widgetService.updateWidgetData(
+      hasWrittenToday: todayEntry != null,
+      currentStreak: calculateStreak(),
+      lastEntryContent: todayEntry?.content,
+    );
+  }
+
+  /// 앱 시작 시 위젯 동기화
+  Future<void> syncWidget() async {
+    await _updateWidget();
   }
 
   /// 특정 날짜 기록 조회
